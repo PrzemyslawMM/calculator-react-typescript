@@ -1,6 +1,6 @@
 # Calculator in typescript react
 
-
+Idea from https://www.upgrad.com/blog/react-project-ideas-topics-beginners/
 
 ## Available Scripts
 
