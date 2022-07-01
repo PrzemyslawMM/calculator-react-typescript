@@ -44,6 +44,7 @@
         "prefer-arrow-callback": ["warn", { "allowUnboundThis": false }],
         "prefer-const": "error",
         "no-shadow": "off",
+        "react/require-default-props": "off",
         "import/prefer-default-export": "off",
         "react/react-in-jsx-scope": "off",
         "react/jsx-filename-extension": "off",

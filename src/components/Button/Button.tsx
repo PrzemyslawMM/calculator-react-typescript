@@ -1,31 +1,18 @@
-import React from 'react';
-import styled from 'styled-components';
-
-interface WrapperProps {
-  haveBGColor?: boolean;
-}
-
-const Wrapper = styled.div<WrapperProps>`
-  border: 1px solid #011251;
-  width: 75px;
-  height: 75px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-weight: 700;
-  font-size: 50px;
-  background-color: ${({ haveBGColor }) => (haveBGColor ? '#011251' : null)};
-  color: ${({ haveBGColor }) => (haveBGColor ? 'white' : 'black')};
-`;
+import React, { useContext, useEffect, useState } from 'react';
+import { Wrapper } from './Button.style';
+import { ContextProvider, useStateContext } from '../context/ContextProvider';
 
 interface ButtonProps {
   text: string;
   haveBGColor?: boolean;
+  span?: number;
 }
 
-const Button: React.FC<ButtonProps> = ({ text, haveBGColor = false }) => {
+const Button: React.FC<ButtonProps> = ({ text, haveBGColor, span }) => {
+  const [value, setValue] = useState(text);
+
   return (
-    <Wrapper haveBGColor={haveBGColor}>
+    <Wrapper haveBGColor={haveBGColor} howManyToSpan={span}>
       <p>{text}</p>
     </Wrapper>
   );

@@ -23,7 +23,5 @@
       {"name": "typescript-styled-plugin", "tags": ["styled", "withProps"]}
     ]
   },
-  "include": [
-    "src"
-  ]
+  "include": ["src/"]
 }
