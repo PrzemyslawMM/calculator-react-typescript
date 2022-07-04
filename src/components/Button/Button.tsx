@@ -21,9 +21,14 @@ const Button: React.FC<ButtonProps> = ({ text, haveBGColor, span }) => {
     char,
     doResult,
     reset,
+    end,
   } = useStateContext();
 
   const handleClick = () => {
+    if (end) {
+      reset();
+      return;
+    }
     switch (text) {
       case '1':
       case '2':
@@ -43,7 +48,7 @@ const Button: React.FC<ButtonProps> = ({ text, haveBGColor, span }) => {
       case '-':
       case '+':
       case '÷':
-        if (value !== '0' && char === '') {
+        if (value !== '0' && !char) {
           setChangeDigit(true);
           setChar(text);
         }
@@ -55,8 +60,9 @@ const Button: React.FC<ButtonProps> = ({ text, haveBGColor, span }) => {
         reset();
         break;
       default:
-        break;
+        throw new Error('Use case default in handleClick (Button.tsx)');
     }
+    console.log('siema');
   };
 
   return (

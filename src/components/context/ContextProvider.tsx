@@ -1,54 +1,26 @@
 /* eslint-disable radix */
 import React, {
   createContext,
+  FC,
   useContext,
   useEffect,
-  useMemo,
   useState,
 } from 'react';
 
-interface StateContextProviderProps {
-  value: string;
-  setValue: React.Dispatch<React.SetStateAction<string>>;
-  setChangeDigit: React.Dispatch<React.SetStateAction<boolean>>;
-  setFirstNumber: React.Dispatch<React.SetStateAction<string>>;
-  setSecondNumber: React.Dispatch<React.SetStateAction<string>>;
-  changeDigit: boolean;
-  firstNumber: string;
-  secondNumber: string;
-  setChar: React.Dispatch<React.SetStateAction<string>>;
-  char: string;
-  doResult: () => void;
-  reset: () => void;
-}
+type Chars = '+' | '-' | '*' | '÷';
 
-// @ts-ignore
-const StateContext = createContext<StateContextProviderProps>();
-
-export const ContextProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
-  // public
+const useProviderSettings = () => {
   const [changeDigit, setChangeDigit] = useState(false);
-  const [char, setChar] = useState('');
+  const [end, setEnd] = useState(false);
+  const [char, setChar] = useState<Chars>('' as Chars);
   const [firstNumber, setFirstNumber] = useState('');
   const [secondNumber, setSecondNumber] = useState('');
   const [value, setValue] = useState('0');
-
-  // private
   const [result, setResult] = useState('');
 
-  useEffect(() => {
-    if (firstNumber === '') return;
-    if (result === '') {
-      setValue(() => firstNumber + char + secondNumber);
-      return;
-    }
-    setValue(() => `${firstNumber + char + secondNumber}=${result}`);
-  }, [firstNumber, secondNumber, char, result]);
-
   const doResult = () => {
-    switch (char) {
+    const method: Chars = char;
+    switch (method) {
       case '+':
         setResult(() =>
           (parseInt(firstNumber) + parseInt(secondNumber)).toString()
@@ -70,55 +42,70 @@ export const ContextProvider: React.FC<{ children: React.ReactNode }> = ({
         );
         break;
       default:
-        break;
+        throw new Error(
+          'Using default value in switch in doResult (ContextProvider.tsx)'
+        );
     }
+    setEnd(true);
   };
 
   const reset = () => {
     setChangeDigit(false);
-    setChar('');
+    setChar('' as Chars);
     setFirstNumber('');
     setSecondNumber('');
     setValue('0');
     setResult('');
+    setEnd(false);
   };
 
-  const memorizedValue = useMemo(
-    () => ({
-      value,
-      setValue,
-      setChangeDigit,
-      setFirstNumber,
-      setSecondNumber,
-      changeDigit,
-      firstNumber,
-      secondNumber,
-      setChar,
-      char,
-      doResult,
-      reset,
-    }),
-    [
-      value,
-      setValue,
-      setSecondNumber,
-      setFirstNumber,
-      setChangeDigit,
-      changeDigit,
-      firstNumber,
-      secondNumber,
-      setChar,
-      char,
-      doResult,
-      reset,
-    ]
-  );
+  useEffect(() => {
+    if (firstNumber === '') return;
+    if (result === '') {
+      setValue(() => firstNumber + char + secondNumber);
+      return;
+    }
+    setValue(() => `${firstNumber + char + secondNumber}=${result}`);
+  }, [firstNumber, secondNumber, char, result]);
+
+  return {
+    doResult,
+    reset,
+    changeDigit,
+    setChangeDigit,
+    end,
+    setEnd,
+    char,
+    setChar,
+    firstNumber,
+    setFirstNumber,
+    secondNumber,
+    setSecondNumber,
+    value,
+    setValue,
+    result,
+  };
+};
+
+type StateContextData = ReturnType<typeof useProviderSettings>;
+
+const StateContext = createContext<StateContextData | null>(null);
+export const ContextProvider: FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const values = useProviderSettings();
 
   return (
-    <StateContext.Provider value={memorizedValue}>
-      {children}
-    </StateContext.Provider>
+    <StateContext.Provider value={values}>{children}</StateContext.Provider>
   );
 };
 
-export const useStateContext = () => useContext(StateContext);
+export const useStateContext = () => {
+  const context = useContext(StateContext);
+
+  if (!context) {
+    throw new Error('Context is null');
+  }
+
+  return context;
+};
